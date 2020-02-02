@@ -3,24 +3,37 @@ import {FlexibleXYPlot, HorizontalGridLines, XAxis, LineMarkSeriesCanvas, LabelS
 
 export default function EventChart() {
     
-    const data = [
-        {x: 0, y: 8},
-        {x: 1, y: 5},
-        {x: 2, y: 4},
-        {x: 3, y: 9},
-        {x: 4, y: 1},
-        {x: 5, y: 76},
-        {x: 6, y: 6},
-        {x: 7, y: 3},
-        {x: 8, y: 2},
-        {x: 9, y: 0}
-      ];
+  
+    var mydata = [
+        {          
+          key: 0,
+          data: [{x:0, y:0},{x:1, y:2}]
+        },
+        {      
+          key: 1,   
+          data: [{x:0, y:2},{x:1, y:0}]
+        }
+    ];
+
+    /*
+    var data = []
+    for (let i = 0; i < 20; i++) {
+      const series = [];
+      for (let j = 0; j < 100; j++) {
+        series.push({x: j, y: (i / 10 + 1) * Math.sin((Math.PI * (i + j)) / 50)});
+      }
+      data.push({color: i, key: i, data: series, opacity: 0.8});
+    }
+     */
       
       return (      
           <FlexibleXYPlot >
             <HorizontalGridLines />
             <XAxis title="X Axis"  />
-            <LineMarkSeriesCanvas data={data} />
+            {mydata.map(props => (
+              <LineMarkSeriesCanvas {...props} />
+            ))}
+            
           </FlexibleXYPlot>       
       );
 }

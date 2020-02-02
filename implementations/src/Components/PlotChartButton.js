@@ -4,6 +4,5 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function PlotChartButton() {
 
-    return <Button>POT CHART</Button>
-
+    return <Button >POT CHART</Button>
 }
