@@ -14,8 +14,10 @@ export default class AppMain extends Component {
         super(props);
         this.state = {
             text: "",
-            data: []
+            series: [],
+            span: [],
         }
+
     }  
 
     renderData(){
@@ -29,6 +31,30 @@ export default class AppMain extends Component {
         )
     }
 
+    renderChart(data, span){
+        return(
+            <EventChart span = {span} dataToBePloted = {data}>
+            </EventChart>
+        )
+    }
+
+    /*
+    updateChart2 = () => {
+        var dataToBePloted = [
+            {          
+              key: 'qwe',
+              data: [{x:0, y:0},{x:1, y:2}]
+            },
+            {      
+              key: 1,   
+              data: [{x:0, y:2},{x:1, y:0}]
+            }
+        ];   
+        var span = [0,1]
+
+        this.setState({series:dataToBePloted, span: span })
+    }
+    */
     updateChart = ()=> {
         const dataText = this.state.text.split('\n')
         var events = [];
@@ -43,8 +69,10 @@ export default class AppMain extends Component {
         var groups = []
         var selects = []
         var beginTimestamp;
-        var endTimestamp;        
+        var endTimestamp;    
+        var stopReached=false;    
         var chartData = []
+        var series = [];
         for(var i = 0 ; i < events.length ; i++)
         {
             var event = events[i];
@@ -81,40 +109,36 @@ export default class AppMain extends Component {
                 }
                 
                 eventGroups.sort();
-                eventSelections.sort();
-                var series = [];
+                eventSelections.sort();                
                 var seriesName = '';    
-                for(var i=0 ; i < eventGroups.length ; i++){                   
-                    seriesName += eventGroups[i] + "_"
+                for(var groupIndex=0 ; groupIndex < eventGroups.length ; groupIndex++){                   
+                    seriesName += eventGroups[groupIndex] + "_"
                 }
 
-                for(var i=0 ; i < eventSelections.length ; i++)
+                for(var selectionIndex=0 ; selectionIndex < eventSelections.length ; selectionIndex++)
                 {
-                    var seriesKeyName = seriesName+eventSelections[i].property;
+                    var seriesKeyName = seriesName+eventSelections[selectionIndex].property;
                     if(seriesKeyName in series){
-                        series[seriesKeyName].push( eventSelections[i].value );
+                        series[seriesKeyName]['data'].push( {'x': event.timestamp, 'y': eventSelections[selectionIndex].value} );
                     }else{
-                        series[seriesKeyName] = [eventSelections[i].value];  
+                        series[seriesKeyName] = {'key': seriesKeyName ,'data': [{'x':event.timestamp, 'y': eventSelections[selectionIndex].value} ]}  
+                        //series.push( [{'key': seriesKeyName ,'data': [{'x':event.timestamp, 'y': eventSelections[selectionIndex].value} ]} ] );
                     }
                 }
             }
-        }      
 
-    }
+            if(event.type === 'stop'){
+                // Don't know very well what to do
+                stopReached = true;
+            }            
+        }     
 
-    buildChart = (events) => {
-        var startEventHasCalled = false;
-        var groups = []
-        var selects = []
-        for(var i = 0 ; i < events.length ; i++)
-        {
-            var event = events[i];            
-            if(event.type == 'start')
-            {
-                groups.push(event.groups)
-                selects.push(event.selects)                
-            }
-        }      
+        var seriesToPlot = []
+        for(var property in series){
+            seriesToPlot.push(series[property])
+        }
+
+        this.setState({series: seriesToPlot, span: [beginTimestamp, endTimestamp]});    
     }
 
 
@@ -134,7 +158,7 @@ export default class AppMain extends Component {
       
               <Grid container>
                 <Grid item xs={8}>     
-                  <EventChart></EventChart>
+                  {this.renderChart(this.state.series, this.state.span)}
                 </Grid> 
                 <Grid item xs={4}>     
                   <DataLabels></DataLabels>
