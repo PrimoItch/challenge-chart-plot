@@ -3,10 +3,14 @@ import EventChart from './Components/EventChart'
 import DataLabels from './Components/DataLabels'
 import AppHeader from './Components/AppHeader'
 import DataInput from './Components/DataInput'
-import Grid from '@material-ui/core/Grid';
-import { Button } from 'react-bootstrap';
+//import Grid from '@material-ui/core/Grid';
+import { Button, Container } from 'react-bootstrap';
 import JSON5 from 'json5'
 import React, { Component } from 'react'
+import labelSeries from 'react-vis/dist/plot/series/label-series'
+
+import { Grommet, Box, Grid } from 'grommet';
+import { grommet } from 'grommet/themes';
 
 export default class AppMain extends Component {
     
@@ -16,6 +20,7 @@ export default class AppMain extends Component {
             text: "",
             series: [],
             span: [],
+            labels: []
         }
 
     }  
@@ -38,34 +43,25 @@ export default class AppMain extends Component {
         )
     }
 
-    /*
-    updateChart2 = () => {
-        var dataToBePloted = [
-            {          
-              key: 'qwe',
-              data: [{x:0, y:0},{x:1, y:2}]
-            },
-            {      
-              key: 1,   
-              data: [{x:0, y:2},{x:1, y:0}]
-            }
-        ];   
-        var span = [0,1]
-
-        this.setState({series:dataToBePloted, span: span })
+    renderLabel(labels){
+        return(
+            <DataLabels labels={labels}></DataLabels>
+        )
     }
-    */
+
     updateChart = ()=> {
         const dataText = this.state.text.split('\n')
         var events = [];
 
         for(var i = 0 ; i < dataText.length ; i++)
         {
+            if(dataText[i] == '') { continue;}
+        
             events.push( JSON5.parse(dataText[i]))
         }      
         
         var startEventHasCalled = false;
-         var timeSpanSetted = false;
+        var timeSpanSetted = false;
         var groups = []
         var selects = []
         var beginTimestamp;
@@ -134,17 +130,19 @@ export default class AppMain extends Component {
         }     
 
         var seriesToPlot = []
+        var seriesLabels = [];
         for(var property in series){
             seriesToPlot.push(series[property])
+            seriesLabels.push(property)
         }
 
-        this.setState({series: seriesToPlot, span: [beginTimestamp, endTimestamp]});    
+        this.setState({series: seriesToPlot, span: [beginTimestamp, endTimestamp], labels: seriesLabels});    
     }
 
 
     render() {
         return (
-            <div spacing={2}>       
+           /*
             <Grid container direction="column" justify="center" >
               <Grid container item xs={12}>     
                 <AppHeader></AppHeader>
@@ -156,23 +154,53 @@ export default class AppMain extends Component {
                 </Grid> 
               </Grid>
       
-              <Grid container>
+              <Grid container alignItems="stretch">
                 <Grid item xs={8}>     
                   {this.renderChart(this.state.series, this.state.span)}
                 </Grid> 
                 <Grid item xs={4}>     
-                  <DataLabels></DataLabels>
+                   {this.renderLabel(this.state.labels)}
                 </Grid> 
               </Grid>
       
-              <Grid container>
+              <Grid container justify="flex-end">
                 <Grid item xs={12}>     
                   <Button onClick={()=> this.updateChart()}>Plot Chart</Button>     
                  </Grid> 
               </Grid>      
              </Grid>
-      
-          </div>
+             */
+            <Grommet full theme={grommet}>
+                <Grid
+                    rows={[ "xxsmall", "medium","medium", "xsmall" ]}
+                    columns={['3/4' , '1/4']}
+                    areas={[
+                    ["header","header"],   
+                    ["dataInput",'dataInput'],   
+                    ["chart",'label'],   
+                    ["footer",'footer'],                        
+                    ]}
+                    >
+
+                <Box gridArea="header">
+                    <AppHeader></AppHeader>
+                </Box>
+                <Box gridArea="dataInput">
+                    {this.renderData(this.state.text)}
+                </Box>
+                <Box gridArea="chart">
+                    {this.renderChart(this.state.series, this.state.span)}
+                </Box>              
+                <Box gridArea="label">
+                     {this.renderLabel(this.state.labels)}
+                </Box>       
+
+                <Box gridArea="footer">
+                    <Button onClick={()=> this.updateChart()}>Plot Chart</Button>   
+                </Box>
+
+            </Grid>
+        </Grommet>            
         )
     }   
 }

@@ -30,8 +30,9 @@ export default function EventChart(props) {
      var ddddd = props.span;
       
       return (      
-          <FlexibleXYPlot xDomain={props.span} >
+          <FlexibleXYPlot xDomain={props.span} xType="time">
             <HorizontalGridLines />
+            <XAxis>Timestamp</XAxis>
             {props.dataToBePloted.map(props => (
               <LineMarkSeriesCanvas {...props} />
             ))}
