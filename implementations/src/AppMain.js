@@ -1,33 +1,39 @@
-import PlotChartButton from './Components/PlotChartButton'
 import EventChart from './Components/EventChart'
 import DataLabels from './Components/DataLabels'
 import AppHeader from './Components/AppHeader'
 import DataInput from './Components/DataInput'
-//import Grid from '@material-ui/core/Grid';
-import { Button, Container } from 'react-bootstrap';
+
 import JSON5 from 'json5'
 import React, { Component } from 'react'
 import labelSeries from 'react-vis/dist/plot/series/label-series'
 
-import { Grommet, Box, Grid } from 'grommet';
-import { grommet } from 'grommet/themes';
+//import { makeStyles } from '@material-ui/core/styles';
+//import Paper from '@material-ui/core/Paper';
+//import Grid from '@material-ui/core/Grid';
+
+//import GridLayout from 'react-grid-layout';
+//import '../node_modules/react-grid-layout/css/styles.css';
+//import '../node_modules/react-resizable/css/styles.css';
+
+import { LabelSeries } from 'react-vis/dist';
 
 export default class AppMain extends Component {
     
     constructor(props){
         super(props);
         this.state = {
-            text: "",
+            text: '',
             series: [],
             span: [],
-            labels: []
+            labels: [],
+            chartHeight: '0px'
         }
 
     }  
 
     renderData(){
         return (
-            <DataInput                    
+            <DataInput  className='dataImput'                       
                 onChange={
                     (newText)=>{
                             this.setState({text: newText })
@@ -36,19 +42,19 @@ export default class AppMain extends Component {
         )
     }
 
-    renderChart(data, span){
+    renderChart(data, span, height){
         return(
-            <EventChart span = {span} dataToBePloted = {data}>
+            <EventChart span = {span} dataToBePloted = {data} height={height}>
             </EventChart>
         )
     }
 
-    renderLabel(labels){
+    renderLabel(labels, height){
         return(
-            <DataLabels labels={labels}></DataLabels>
+            <DataLabels labels={labels} height={height}></DataLabels>
         )
     }
-
+   
     updateChart = ()=> {
         const dataText = this.state.text.split('\n')
         var events = [];
@@ -118,14 +124,13 @@ export default class AppMain extends Component {
                         series[seriesKeyName]['data'].push( {'x': event.timestamp, 'y': eventSelections[selectionIndex].value} );
                     }else{
                         series[seriesKeyName] = {'key': seriesKeyName ,'data': [{'x':event.timestamp, 'y': eventSelections[selectionIndex].value} ]}  
-                        //series.push( [{'key': seriesKeyName ,'data': [{'x':event.timestamp, 'y': eventSelections[selectionIndex].value} ]} ] );
                     }
                 }
             }
 
             if(event.type === 'stop'){
-                // Don't know very well what to do
-                stopReached = true;
+                // All data after stop event should be ignored
+                break;
             }            
         }     
 
@@ -139,37 +144,133 @@ export default class AppMain extends Component {
         this.setState({series: seriesToPlot, span: [beginTimestamp, endTimestamp], labels: seriesLabels});    
     }
 
+    componentDidMount(){
+        this.updateChartHeight();
+        
+        window.addEventListener("resize", this.updateChartHeight.bind(this));
+    }
 
-    render() {
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateChartHeight.bind(this));
+      }
+
+    updateChartHeight(){
+        var mainContainer = document.getElementById('mainContainer')
+
+        var header = document.getElementById('headerDiv');
+        var data = document.getElementById('dataDiv');
+        var footer =  document.getElementById('footerDiv');
+        var chart = document.getElementById('chartDiv');
+
+        var mainContainerHeight = mainContainer.clientHeight;
+        var dataHeight = data.clientHeight;
+        var footerHeight = footer.clientHeight;
+        var headerHeight = header.clientHeight;
+
+        var chartHeight = mainContainerHeight - dataHeight - footerHeight - headerHeight;
+
+        this.setState({chartHeight: chartHeight})
+
+    }
+
+    
+
+
+    render() {    
+        
+        const layout = [
+            {i: 'dataImput', x: 0, y: 0, w: 1, h: 1},
+            {i: 'chart', x: 0, y: 1, w: 1, h: 1}];
+
         return (
-           /*
-            <Grid container direction="column" justify="center" >
-              <Grid container item xs={12}>     
-                <AppHeader></AppHeader>
-              </Grid>
-      
-              <Grid container>
-                <Grid item xs={12}>     
-                  {this.renderData(this.state.text)}
-                </Grid> 
-              </Grid>
-      
-              <Grid container alignItems="stretch">
-                <Grid item xs={8}>     
-                  {this.renderChart(this.state.series, this.state.span)}
-                </Grid> 
-                <Grid item xs={4}>     
-                   {this.renderLabel(this.state.labels)}
-                </Grid> 
-              </Grid>
-      
-              <Grid container justify="flex-end">
-                <Grid item xs={12}>     
-                  <Button onClick={()=> this.updateChart()}>Plot Chart</Button>     
-                 </Grid> 
-              </Grid>      
-             </Grid>
-             */
+            /*
+            <div className='container'>
+                <AppHeader className='header'>header</AppHeader>
+                {this.renderData(this.state.text)}                    
+                <div className='char-container'>
+                    <div className='chart'>
+                         {this.renderChart(this.state.series, this.state.span)}
+                    </div >
+                    <div className='label'> 
+                        {this.renderLabel(this.state.labels)}
+                    </div>                        
+                </div>
+                <footer className='footer'>
+                    <Button onClick={()=> this.updateChart()}>Plot Chart</Button>  
+                </footer>
+            </div>
+            )
+            */
+            /*
+            <Flexbox flexDirection='column'>
+
+                <Flexbox element="header">
+                    <AppHeader element="header" height="60px"></AppHeader>
+                </Flexbox>
+
+                <Flexbox>
+                    {this.renderData(this.state.text)}                    
+                </Flexbox>
+
+                <Flexbox flexGrow={1}>
+                    <Flexbox flexDirection="row">
+                        {this.renderChart(this.state.series, this.state.span)}
+                        {this.renderLabel(this.state.labels)}
+                    </Flexbox>
+                </Flexbox>
+
+                <Flexbox element="footer">
+                    <footer>
+                        <Button onClick={()=> this.updateChart()}>Plot Chart</Button>  
+                    </footer>
+                </Flexbox>
+            </Flexbox>
+*/
+
+            <div id='mainContainer' class="container-fluid h-100">
+                 {/*Style for the Chart*/}
+                <link rel="stylesheet" href="https://unpkg.com/react-vis/dist/style.css"></link>
+                <link href="css/codemirror.css" rel="stylesheet"></link>     
+                
+                <div class="container-fluid">   
+
+                    <div id='headerDiv' className='row'>
+                        <div className='col  bg-light align-middle'>
+                           <p className='text-xl-center font-weight-bold'>Alan's Challenger</p>
+                        </div>                        
+                    </div>
+
+                    <div id='dataDiv'  className='row'>
+                        <div className='col'>
+                            {this.renderData(this.state.text)}
+                        </div>
+                    </div>
+
+                    <div id='chartDiv' className='row flex-nowrap'>
+
+                        <div className='col'>
+                            {this.renderChart(this.state.series, this.state.span, this.state.chartHeight)}
+                        </div>
+
+                        <div className='col'>
+                            {this.renderLabel(this.state.labels, this.state.chartHeight)}     
+                        </div>      
+
+                    </div>   
+
+                    <div id='footerDiv' className='row'>
+                        <div class="navbar navbar-fixed-bottom bg-light">   
+                            <button className={'btn btn-primary'} onClick={()=> this.updateChart()}>Plot Chart</button>     
+                        </div>
+
+                    </div>
+                                    
+                </div>
+                
+            </div>
+             
+
+             /*
             <Grommet full theme={grommet}>
                 <Grid
                     rows={[ "xxsmall", "medium","medium", "xsmall" ]}
@@ -201,6 +302,7 @@ export default class AppMain extends Component {
 
             </Grid>
         </Grommet>            
+        */
         )
     }   
 }

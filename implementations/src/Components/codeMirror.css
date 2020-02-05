@@ -1,0 +1,6 @@
+/* Copied from codemirror */
+/* BASICS */ 
+:global .CodeMirror {
+    /* Set height, width, borders, and global font properties here */
+    height: 100%;
+  }

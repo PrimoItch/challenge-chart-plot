@@ -1,16 +1,16 @@
 import React from 'react';
 import AppMain from './AppMain'
+// import Flexbox from 'flexbox-react'
+import './App.css'
+import { Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
 
-  return (
-    <div>
-       {/*Style for the Chart*/}
-       <link rel="stylesheet" href="https://unpkg.com/react-vis/dist/style.css"></link>
-      <link href="css/codemirror.css" rel="stylesheet"></link>
-      <AppMain></AppMain>
+  return ( 
+      <AppMain></AppMain>  
 
-    </div>
   );
 }
 
