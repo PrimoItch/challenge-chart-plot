@@ -4,7 +4,7 @@ import '../../node_modules/codemirror/theme/material.css'
 import '../../node_modules/codemirror/mode/javascript/javascript'
 import '../App.css'
 
-import React, { Component } from 'react'
+import React from 'react'
 
 export default function DataInput(props) {
 
@@ -15,12 +15,14 @@ export default function DataInput(props) {
         lineNumbers: true,        
         autoScroll: true,             
         }
-    
+
     return (
-        <CodeMirror 
+    <CodeMirror 
+        height={props.height}
+        style={{"height": props.height+'px', "max-height":props.height+'px' }}
         onChange={(editor, data, value) => props.onChange(value)}
-        options={options}/>
-   
+        options={options}/>   
     )
 }
+
 

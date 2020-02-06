@@ -1,5 +1,5 @@
 import React from 'react'
-import {FlexibleXYPlot, XYPlot, LineSeries, FlexibleHeightXYPlot, VerticalGridLines, YAxis, HorizontalGridLines, XAxis, LineMarkSeriesCanvas} from 'react-vis';
+import {FlexibleXYPlot, HorizontalGridLines, XAxis, LineMarkSeriesCanvas} from 'react-vis';
 
 export default function EventChart(props) {
 
