@@ -16,5 +16,22 @@ html,body{height:100%;}
 .resizer{
   cursor: row-resize !important;; 
   background-color: black;
+  color: whitesmoke;
+  position: relative;
+  top: -5px;
+  font: white;
+  border: thin;
   height: 10px;
+  width: 20px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  vertical-align: middle;
+  text-align: start;
+  text-overflow: ellipsis; 
+  text-align: center;
+  vertical-align: middle;
+  line-height: 7px; 
+  border-radius: 3px;
+  user-select: none;
 }
