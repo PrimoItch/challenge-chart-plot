@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function AppHeader() {
     return (
-        <header>Alan's Challenge</header>
+        <p className='text-xl-center font-weight-bold'>Alan's Challenge</p>
     )
 }

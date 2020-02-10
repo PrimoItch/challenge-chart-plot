@@ -4,6 +4,7 @@ import DataInput from './Components/DataInput'
 
 import JSON5 from 'json5'
 import React, { Component } from 'react'
+import AppHeader from './Components/AppHeader'
 
 export default class AppMain extends Component {
 
@@ -53,7 +54,13 @@ export default class AppMain extends Component {
         for (var i = 0; i < dataText.length; i++) {
             if (dataText[i] === '') { continue; }
 
-            events.push(JSON5.parse(dataText[i]))
+            try {
+                events.push(JSON5.parse(dataText[i]))
+            }
+            catch (e) {
+                alert('The data supplied on line ' + (i + 1) + ' is not in json format. Please review your data.')
+                return;
+            }
         }
 
         var startEventHasCalled = false;
@@ -72,15 +79,30 @@ export default class AppMain extends Component {
                 groups = event.group
                 selects = event.select
                 startEventHasCalled = true;
+                continue;
             }
 
             if (event.type === 'span') {
                 beginTimestamp = event.begin;
                 endTimestamp = event.end;
                 timeSpanSetted = true;
+                continue;
             }
 
             if (event.type === 'data') {
+                if (startEventHasCalled == false && timeSpanSetted == false) {
+                    alert('A start and a span event are expected before a data event. Please review your data.')
+                    return;
+                }
+                if (startEventHasCalled == false) {
+                    alert('A start is expected before a data event. Please review your data.')
+                    return;
+                }
+                if (timeSpanSetted == false) {
+                    alert('A span is expected before a data event. Please review your data.')
+                    return;
+                }
+
                 var eventGroups = [];
                 var eventSelections = [];
                 for (var property in event) {
@@ -109,6 +131,7 @@ export default class AppMain extends Component {
                         series[seriesKeyName] = { 'key': seriesKeyName, 'data': [{ 'x': event.timestamp, 'y': eventSelections[selectionIndex].value }] }
                     }
                 }
+                continue;
             }
 
             if (event.type === 'stop') {
@@ -145,18 +168,17 @@ export default class AppMain extends Component {
     }
 
     resizeDataInput = (e) => {
-        var resizer = document.getElementById('resizer')
         var root = document.getElementById('root')
         var rootHeight = root.clientHeight
 
-        var p = e.pageY / rootHeight;
-        if (p > 0.85) {
-            p = 0.85
+        var proportion = e.pageY / rootHeight;
+        if (proportion > 0.85) {
+            proportion = 0.85
         }
-        if (p < 0.15) {
-            p = 0.15
+        if (proportion < 0.15) {
+            proportion = 0.15
         }
-        this.setState({ proportion: p })
+        this.setState({ proportion: proportion })
         this.updateChartHeight()
     }
 
@@ -171,13 +193,11 @@ export default class AppMain extends Component {
         var header = document.getElementById('headerDiv');
         var data = document.getElementById('dataDiv');
         var footer = document.getElementById('footerDiv');
-        var resizer = document.getElementById('resizer');
-
+        
         var mainContainerHeight = mainContainer.clientHeight;
         var dataHeight = data.clientHeight;
         var footerHeight = footer.clientHeight;
         var headerHeight = header.clientHeight;
-        var resizerHeight = resizer.clientHeight;
 
         var total = (mainContainerHeight - footerHeight - headerHeight);
         var chartHeight = (1 - this.state.proportion) * total;
@@ -200,7 +220,7 @@ export default class AppMain extends Component {
 
                     <div id='headerDiv' className='row'>
                         <div className='col bg-secondary align-middle'>
-                            <p className='text-xl-center font-weight-bold'>Alan's Challenger</p>
+                            <AppHeader></AppHeader>
                         </div>
                     </div>
 
@@ -210,7 +230,7 @@ export default class AppMain extends Component {
                         </div>
                     </div>
 
-                    <div id='resizer' className='row justify-content-center nopadding nomargin' style={{"height": '0px'}} >
+                    <div id='resizer' className='row justify-content-center nopadding nomargin' style={{ "height": '0px' }} >
                         <div className='resizer'>
                             =
                         </div>
@@ -230,7 +250,6 @@ export default class AppMain extends Component {
                     <div id='footerDiv' className='row'>
                         <div class="col navbar navbar-fixed-bottom bg-secondary">
                             <button className={'btn btn-primary'} onClick={() => this.updateChart()}>GENERATE CHART</button>
-
                         </div>
 
                     </div>

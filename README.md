@@ -1,3 +1,32 @@
+# Challenger solution
+
+This is my solution for the challenge-chart-plot.
+
+## Documentation
+
+Some documentations were provided in the link below:
+
+[Documentation](https://docs.google.com/document/d/12_eOUoK88bdZh-ibr_HxnjQvSDkvN2tAUpdMHgbdH7E/edit?usp=sharing)
+
+## Completeness of the challenge
+
+### What is done:
+
+* The application replicate the picture provided;
+* The textbox for data input is able to recognize json format;
+* The chart is plotted with the data provided on textbox;
+* The textbox is resizable;
+* The chart does not disappear, even with the textbox in its maximum size;
+* The footer is fixed in the bottom of the page;
+
+### What is not done:
+
+* The application was not tested and was not designed for a huge amount of data. Probably it will be inefficient;
+* No automated test was made. But many test cases is provided, they are in the last section of the documentations.
+
+
+# ===============================================================================================
+
 # Plotting a chart
 
 In this challenge, you will implement a web application that plots a line chart based on some manually input data.
